@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "118633620523",
+    "firebase_url": "https://darkgo-72baf-default-rtdb.firebaseio.com",
+    "project_id": "darkgo-72baf",
+    "storage_bucket": "darkgo-72baf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:118633620523:android:a3fe308d0c45ca0588f66e",
+        "android_client_info": {
+          "package_name": "com.darkroot.darkgo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "118633620523-fae9di909d7881flkg6u3n915bhr58k5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzO_whQcWzBPUN5ZA93RknltX1EczCb-0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "118633620523-fae9di909d7881flkg6u3n915bhr58k5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

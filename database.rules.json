@@ -1,0 +1,82 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['displayName', 'createdAt'])"
+      }
+    },
+    "public_rooms": {
+      ".read": "auth != null",
+      "$roomId": {
+        ".write": "auth != null",
+        ".validate": "newData.child('status').val() === 'WAITING' || !newData.exists()"
+      }
+    },
+    "rooms": {
+      ".indexOn": ["roomCode"],
+      ".read": "auth != null",
+
+      "$roomId": {
+        ".write": "auth != null && (!data.exists() || data.child('players').hasChild(auth.uid) || data.child('status').val() === 'WAITING')",
+
+        "roomCode": {
+          ".validate": "newData.isString() && newData.val().length >= 4 && (!data.exists() || newData.val() === data.val())"
+        },
+
+        "hostUid": {
+          ".validate": "newData.isString() && ((!data.exists() && newData.val() === auth.uid) || newData.val() === data.val() || root.child('rooms').child($roomId).child('players').hasChild(newData.val()))"
+        },
+
+        "status": {
+          ".validate": "newData.val() === 'WAITING' || newData.val() === 'CARD_SELECTION' || newData.val() === 'PLAYING' || newData.val() === 'FINISHED' || newData.val() === 'CANCELLED'"
+        },
+
+        "maxPlayers": {
+          ".validate": "newData.isNumber() && newData.val() <= 10 && (!data.exists() || newData.val() === data.val())"
+        },
+
+        "createdAt": {
+          ".validate": "newData.isNumber() && (!data.exists() || newData.val() === data.val())"
+        },
+
+        "players": {
+          "$uid": {
+            ".write": "auth != null && (auth.uid === $uid || auth.uid === root.child('rooms').child($roomId).child('hostUid').val())",
+            ".validate": "newData.child('uid').val() === $uid"
+          }
+        },
+
+        "cards": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid",
+            ".validate": "(data.exists() && newData.val() === data.val()) || (root.child('rooms').child($roomId).child('players').hasChild($uid) && (root.child('rooms').child($roomId).child('status').val() === 'WAITING' || root.child('rooms').child($roomId).child('status').val() === 'CARD_SELECTION') && newData.hasChildren(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24']) && !newData.hasChild('25'))"
+          }
+        },
+
+        "game": {
+          ".write": "auth != null && root.child('rooms').child($roomId).child('players').hasChild(auth.uid)",
+          ".validate": "root.child('rooms').child($roomId).child('status').val() === 'PLAYING' || root.child('rooms').child($roomId).child('status').val() === 'FINISHED'",
+
+          "currentTurnUid": {
+            ".validate": "newData.isString() && root.child('rooms').child($roomId).child('players').hasChild(newData.val())"
+          },
+
+          "calledNumbers": {
+            ".validate": "(!data.hasChild('0') || newData.hasChild('0')) && (!data.hasChild('1') || newData.hasChild('1')) && (!data.hasChild('2') || newData.hasChild('2')) && (!data.hasChild('3') || newData.hasChild('3')) && (!data.hasChild('4') || newData.hasChild('4')) && (!data.hasChild('5') || newData.hasChild('5')) && (!data.hasChild('6') || newData.hasChild('6')) && (!data.hasChild('7') || newData.hasChild('7')) && (!data.hasChild('8') || newData.hasChild('8')) && (!data.hasChild('9') || newData.hasChild('9')) && (!data.hasChild('10') || newData.hasChild('10')) && (!data.hasChild('11') || newData.hasChild('11')) && (!data.hasChild('12') || newData.hasChild('12')) && (!data.hasChild('13') || newData.hasChild('13')) && (!data.hasChild('14') || newData.hasChild('14')) && (!data.hasChild('15') || newData.hasChild('15')) && (!data.hasChild('16') || newData.hasChild('16')) && (!data.hasChild('17') || newData.hasChild('17')) && (!data.hasChild('18') || newData.hasChild('18')) && (!data.hasChild('19') || newData.hasChild('19')) && (!data.hasChild('20') || newData.hasChild('20')) && (!data.hasChild('21') || newData.hasChild('21')) && (!data.hasChild('22') || newData.hasChild('22')) && (!data.hasChild('23') || newData.hasChild('23')) && (!data.hasChild('24') || newData.hasChild('24'))",
+            "$num": {
+              ".validate": "newData.isBoolean() || newData.isNumber()"
+            }
+          },
+
+          "winners": {
+            "$idx": {
+              ".validate": "newData.isString() && root.child('rooms').child($roomId).child('players').hasChild(newData.val())"
+            }
+          }
+        }
+      }
+    }
+  }
+}

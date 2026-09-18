@@ -1,0 +1,6 @@
+{
+  "name": "Dark Go",
+  "description": "Dark Go - 5x5 Bingo 25 native Android game with Firebase Realtime Database multiplayer, custom card creator, practice mode, and vs bots.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
