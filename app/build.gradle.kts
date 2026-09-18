@@ -32,7 +32,7 @@ android {
       val keystorePathEnv = System.getenv("KEYSTORE_PATH")
       val storePasswordEnv = System.getenv("STORE_PASSWORD")
       val keyPasswordEnv = System.getenv("KEY_PASSWORD")
-      if (keystorePathEnv != null && storePasswordEnv != null && keyPasswordEnv != null) {
+      if (!keystorePathEnv.isNullOrBlank() && !storePasswordEnv.isNullOrBlank() && !keyPasswordEnv.isNullOrBlank()) {
         // Real release keystore, supplied via env vars (e.g. GitHub Actions secrets).
         storeFile = file(keystorePathEnv)
         storePassword = storePasswordEnv
