@@ -1,0 +1,66 @@
+name: Build Dark Go APK
+
+# Runs automatically on every push/PR to main, and can also be triggered manually
+# from the Actions tab ("Run workflow").
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # This project's exported gradle/wrapper folder is missing the actual
+      # gradle-wrapper.jar binary, so we use Gradle's own setup action instead
+      # of `./gradlew`. It installs the exact Gradle version this project
+      # needs (see gradle/wrapper/gradle-wrapper.properties) and gives us
+      # dependency/build caching for free.
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 9.3.1
+
+      # No signing secrets are required: app/build.gradle.kts falls back to
+      # the default debug keystore for the release build type whenever
+      # KEYSTORE_PATH / STORE_PASSWORD / KEY_PASSWORD aren't set, so both
+      # variants build out of the box. To produce a real Play-Store-ready
+      # release build later, add those three as repo secrets and this same
+      # workflow will pick them up automatically.
+      - name: Build debug APK
+        run: gradle :app:assembleDebug --stacktrace
+        env:
+          KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Build release APK
+        run: gradle :app:assembleRelease --stacktrace
+        env:
+          KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: dark-go-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: dark-go-release-apk
+          path: app/build/outputs/apk/release/*.apk
